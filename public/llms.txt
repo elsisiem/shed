@@ -23,4 +23,4 @@ GET /v1/status
 
 ## One curl
 
-curl -s $HOST/v1/demo | jq '{gen: .after.generation, dropped: [.dropped[].title], savedTokens, savedPct, quality: .nextRun.quality}'
+curl -s -X POST $HOST/v1/demo | jq '{gen: .after.generation, dropped: [.dropped[].title], savedTokens, savedPct, quality: .nextRun.quality}'

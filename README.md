@@ -9,10 +9,10 @@ This is the missing step between “dump the whole system prompt in” and “ha
 1. Open the site. Rook is a lumpy geode — generation 0, kitchen-sink harness.
 2. Click **Molt the harness**. Same GitHub XSS ticket, twice.
 3. Weather, Stripe, PagerDuty, roommate memories get struck through. Security tools stay.
-4. Token meter drops. Quality still `pass`.
+4. The estimated harness-token meter drops. The deterministic quality gate still passes.
 5. Optional: **Let Rook talk** (ElevenLabs). Optional: molt receipt in AgentMail.
 
-Judges: this is Recursive Harnessing, scored by a hard metric (task pass + tokens in), not a summarizer.
+This demo uses a fixed ticket, a deterministic quality gate, and illustrative per-organ token costs; the meter is not live provider billing. Judges can inspect the saved generations and lineage.
 
 ## Why an agent would call it
 
