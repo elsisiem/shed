@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Shed — agents molt</title>
+    <link rel="stylesheet" href="/app.css" />
+  </head>
+  <body>
+    <div class="noise"></div>
+    <header>
+      <span class="mark">SHED</span>
+      <nav>
+        <a href="#demo">demo</a>
+        <a href="#integrate">integrate</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <svg id="rook" viewBox="0 0 220 240" aria-hidden="true">
+          <defs>
+            <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#f4d38a" />
+              <stop offset="1" stop-color="#7a5a2a" />
+            </linearGradient>
+          </defs>
+          <polygon class="facet fat" points="110,12 200,78 168,210 52,210 20,78" />
+          <polygon class="facet fat" points="110,12 200,78 110,108" />
+          <polygon class="facet" points="110,12 20,78 110,108" />
+          <polygon class="facet fat" points="200,78 168,210 110,108" />
+          <polygon class="facet" points="20,78 52,210 110,108" />
+          <polygon class="facet fat" points="52,210 168,210 110,108" />
+          <circle cx="92" cy="92" r="6" fill="#1a1208" />
+          <circle cx="128" cy="92" r="6" fill="#1a1208" />
+          <path d="M88 128 Q110 148 132 128" fill="none" stroke="#1a1208" stroke-width="4" />
+        </svg>
+        <div>
+          <p class="eyebrow">recursive harnessing</p>
+          <h1>Your agent is wearing last year’s coat.</h1>
+          <p class="lede">
+            Most harnesses ship every rule, every tool, every leftover memory. Plenty never fires. You still pay for it.
+            <b>Shed watches which organs actually work, then molts the rest.</b>
+            Same task. Fewer tokens. If quality dips, they grow back.
+          </p>
+          <p class="tiny">Built for agents. Demo for humans. Lineage in Mongo. Signals in Raindrop. Voice by Rook.</p>
+        </div>
+      </section>
+
+      <section id="demo">
+        <div class="bar">
+          <button id="go" type="button">Molt the harness</button>
+          <button id="speak" type="button" disabled>Let Rook talk</button>
+          <span id="status">fat generation 0 loaded</span>
+        </div>
+        <div class="cols">
+          <article>
+            <h2>Before</h2>
+            <p class="meter" id="before-meter">— tokens</p>
+            <ul id="before"></ul>
+          </article>
+          <article>
+            <h2>After</h2>
+            <p class="meter" id="after-meter">— tokens</p>
+            <ul id="after"></ul>
+          </article>
+        </div>
+        <pre id="log" hidden></pre>
+      </section>
+
+      <section id="integrate">
+        <h2>One call. Next run is cheaper.</h2>
+        <pre>curl -s -X POST https://HOST/v1/demo
+GET  /v1/harness/rook/github.security.triage
+GET  /llms.txt</pre>
+        <p>
+          Agents don’t “compress a prompt.” They <i>revoke tool access</i>, drop dead rules, and keep a spine of guardrails.
+          Raindrop gets the pass/fail signal. That’s the molt metric — not a vibe.
+        </p>
+      </section>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,26 @@
+# Shed
+
+Shed is an HTTP harness for agents. You send a fat harness (rules, tools, memories, guardrails, policies). Shed runs the task, sees which organs actually fired, and returns a cheaper next generation. Spine guardrails never drop. If quality fails, organs grow back.
+
+Agents call this because every unused tool in a prompt is a tax they pay on every turn.
+
+## Integrate
+
+POST /v1/demo
+  Run the canned security-triage molt. No body.
+
+GET /v1/harness/:agent/:task
+  Latest generation for that agent+task. Start with rook / github.security.triage
+
+GET /v1/lineage?agent=rook&task=github.security.triage
+  Mongo (or memory) lineage: what was shed, tokens saved.
+
+POST /v1/speak
+  {"text":"..."} → audio/mpeg (ElevenLabs, optional)
+
+GET /v1/status
+  Which sponsors are wired.
+
+## One curl
+
+curl -s $HOST/v1/demo | jq '{gen: .after.generation, dropped: [.dropped[].title], savedTokens, savedPct, quality: .nextRun.quality}'

@@ -1,0 +1,43 @@
+:root {
+  --ink: #1a1208;
+  --paper: #f3ead4;
+  --mica: #c9b48a;
+  --cut: #e8c56b;
+  --dead: #8a7a62;
+  --blood: #7a2e1f;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--paper); color: var(--ink); font: 18px/1.4 "Iowan Old Style", "Palatino Linotype", Palatino, serif; }
+.noise {
+  pointer-events: none; position: fixed; inset: 0; opacity: 0.08;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.8' /%3E%3C/filter%3E%3Crect width='80' height='80' filter='url(%23n)' opacity='.4'/%3E%3C/svg%3E");
+}
+header { display: flex; justify-content: space-between; padding: 1.2rem 2rem; position: relative; }
+.mark { letter-spacing: 0.4em; font-size: 0.75rem; }
+nav a { margin-left: 1.2rem; color: var(--ink); }
+.hero { display: grid; grid-template-columns: 220px 1fr; gap: 2rem; padding: 1rem 2rem 3rem; align-items: center; }
+h1 { font-size: clamp(2rem, 5vw, 3.4rem); line-height: 0.95; font-weight: 600; margin: 0.2rem 0 1rem; }
+.eyebrow { text-transform: lowercase; letter-spacing: 0.12em; color: var(--blood); margin: 0; }
+.lede { max-width: 40rem; }
+.tiny { font-size: 0.9rem; color: #5c4e38; }
+#rook { width: 220px; }
+.facet { fill: url(#g); stroke: var(--ink); stroke-width: 2; transition: opacity 0.6s; }
+.facet.fat.gone { opacity: 0.12; }
+#demo, #integrate { padding: 0 2rem 3rem; }
+.bar { display: flex; gap: 0.8rem; align-items: center; flex-wrap: wrap; margin-bottom: 1.2rem; }
+button {
+  background: var(--ink); color: var(--paper); border: 0; padding: 0.6rem 1rem;
+  font: inherit; cursor: pointer;
+}
+button:disabled { opacity: 0.4; cursor: not-allowed; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+ul { list-style: none; padding: 0; margin: 0; }
+li { padding: 0.25rem 0; border-bottom: 1px solid #ddcfb0; font-size: 0.95rem; }
+li.dead { color: var(--dead); text-decoration: line-through; }
+li.spine::before { content: "spine · "; color: var(--blood); }
+.meter { font-variant-numeric: tabular-nums; color: var(--blood); }
+pre { background: var(--ink); color: var(--cut); padding: 1rem; overflow: auto; font-size: 0.85rem; }
+#status { font-size: 0.95rem; }
+@media (max-width: 800px) {
+  .hero, .cols { grid-template-columns: 1fr; }
+}
