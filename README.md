@@ -1,56 +1,75 @@
 # Shed
 
-**Agents molt.** A recursive harness that drops unused rules, tools, and memories after each run, then grows them back if quality fails.
+o**Agents molt.** Shed observes which parts of an agent harness a task uses, removes unused rules, tools, and memories, and keeps a protected spine of guardrails. A deterministic quality gate checks the thinner generation; required demo tools are restored if the check fails.
 
-This is the missing step between “dump the whole system prompt in” and “hand-prune it for a week.” Shed instruments which organs actually fired, writes a thinner generation, and keeps a spine of guardrails. You skip the prompt-gardening. You stop paying the context tax.
+Shed is a hackathon prototype, not a general-purpose prompt optimizer. Its included demo uses one fixed GitHub security-triage ticket, keyword-based organ activation, a deterministic pass/fail gate, and illustrative token and dollar estimates. The estimates are not measured provider billing.
 
-## 30-second demo
+## Try the demo
 
-1. Open the site. Rook is a lumpy geode — generation 0, kitchen-sink harness.
-2. Click **Molt the harness**. Same GitHub XSS ticket, twice.
-3. Weather, Stripe, PagerDuty, roommate memories get struck through. Security tools stay.
-4. The estimated harness-token meter drops. The deterministic quality gate still passes.
-5. Optional: **Let Rook talk** (ElevenLabs). Optional: molt receipt in AgentMail.
-
-This demo uses a fixed ticket, a deterministic quality gate, and illustrative per-organ token costs; the meter is not live provider billing. Judges can inspect the saved generations and lineage.
-
-## Why an agent would call it
-
-Every unused tool schema is billed on every turn. Shed returns the current cheapest harness that still passes the task. Next session: `GET /v1/harness/:agent/:task`.
-
-## Stack (this hackathon)
-
-| Piece | Why |
-| --- | --- |
-| **MongoDB Atlas** | Harness generations + lineage (required for finalists) |
-| **Raindrop** | Fat vs molted `ai_interaction` events and `task_pass` / `tokens_shed` signals — the RSI loop |
-| **ElevenLabs** | Rook, the gem, says what got shed |
-| **AWS** | Atlas lives here; app can sit on Fly with leftover credits |
-| **Cursor** | Built in Cursor |
-
-Old credits we still burn if present: **Exa** seeds a live GHSA memory into the next generation (`/search` + `outputSchema`, per Exa skill). **AgentMail** emails a molt receipt. **Fly.io** hosts the demo.
-
-Modelence is the Mongo-native app platform a judge represents. Shed talks to Atlas directly so the lineage is inspectable without a second control plane. Happy to port stores later.
-
-## Run
-
-```bash
-cp .env.example .env
+```powershell
 npm install
-npm test
+npm run check
 npm run dev
 ```
 
-## What we need from you (Mongo + current sponsors)
+Open <http://localhost:8080> and click **Molt the harness**. The first run sheds unused demo organs; later runs continue from the saved generation. The optional **Let Rook talk** button requires ElevenLabs.
 
-Reply with these and the demo goes live on Atlas instead of in-memory:
+## Atlas setup
 
-1. **MongoDB Atlas sandbox**: accept the hackathon's Atlas invitation, create the project/cluster in that sandbox, then create a database user with read/write access to `shed`. In Atlas, open **Database → Connect → Drivers**, choose Node.js, and copy the connection string. Replace its username/password placeholders, append `/shed` as the database, then set it as `MONGODB_URI` in your local `.env`. Add a network access rule for Fly; `0.0.0.0/0` is the quick demo option, but use a narrow egress IP allowlist if you have one. Never commit or paste the URI into chat.
-2. **Raindrop** write key from [app.raindrop.ai](https://app.raindrop.ai) (settings → API keys). Optional project slug, default `shed`. This is the RSI prize wiring.
-3. **ElevenLabs** API key (and optional `ELEVENLABS_VOICE_ID`). Without it, Rook is silent but the molt still runs.
+Finalists must use the hackathon-provided MongoDB Atlas Sandbox. This project stores harness generations, runs, and lineage in the `shed` database.
 
-The local `.env` is git-ignored. Keep provider keys there for local runs; use your deploy platform's secret store for hosted runs. Exa uses `/search` with structured output because the live seed needs extracted rules/tools, plus highlights for source evidence. It runs only until a live rule has been added to the harness, avoiding a paid search on every later molt.
+1. Use the Atlas sandbox cluster and database user created for this project.
+2. In the ignored local `.env` file, set `MONGODB_URI` to the cluster connection string, including `/shed` before any query parameters.
+3. In Atlas **Network Access**, allow connections from the app host. For a quick demo, `0.0.0.0/0` is broad; prefer a narrower allowlist when possible.
+4. Start the app and check `GET /v1/status` reports `"mongo": true`.
 
-Any API credentials pasted into chat should be revoked and replaced before use. Do not send replacement secrets in chat: update `.env` locally or add them through the provider's secret manager.
+Keep the URI private. Never commit `.env` or paste connection strings and passwords into chat.
 
-For Fly, install/log in to `flyctl`, set the secrets in the app's secret store, then deploy with `fly deploy`. A Mongo connection is required for durable lineage and hackathon judging; without it the app deliberately falls back to in-memory demo data.
+## Deploy to Fly.io
+
+MongoDB Atlas is required for durable hosted data; the other providers below are optional.
+
+1. Install `flyctl` and authenticate locally with `fly auth login`.
+2. Confirm or choose a globally unique Fly app name in `fly.toml`.
+3. Add `MONGODB_URI` to the app's **Fly secrets** using the Fly dashboard or CLI secret manager. Do not commit it or put it in `[env]` in `fly.toml`.
+4. Deploy from the repository with `fly deploy`.
+5. Verify `https://<your-app>.fly.dev/healthz`, then check `GET /v1/status` reports `"mongo": true`.
+
+Atlas Network Access must permit the Fly app to connect. The `/healthz` endpoint checks that the web process is responsive; confirm Mongo persistence separately by running the demo and checking `GET /v1/lineage`.
+
+## Optional integrations
+
+None of these keys are needed to deploy the core demo:
+
+| Integration | Environment variables | What it enables |
+| --- | --- | --- |
+| Exa | `EXA_API_KEY` | Structured web search for a live GHSA practice seed on the first molt |
+| AgentMail | `AGENTMAIL_API_KEY`, `AGENTMAIL_INBOX` | Email molt receipts; `MOLT_NOTIFY_TO` can override the recipient |
+| ElevenLabs | `ELEVENLABS_API_KEY` | Rook's optional spoken molt receipt; `ELEVENLABS_VOICE_ID` can select a voice |
+| Raindrop | `RAINDROP_WRITE_KEY`, optional `RAINDROP_PROJECT` | Task outcome and token-savings signals |
+
+Store development values in the ignored `.env` file and hosted values in the provider's secret manager. Credentials previously pasted into chat should be revoked and replaced before use. Never paste replacement keys, database passwords, or connection strings into chat or commit them.
+
+## HTTP API
+
+| Method | Route | Description |
+| --- | --- | --- |
+| `GET` | `/healthz` | Process health |
+| `GET` | `/v1/status` | Which optional integrations are configured |
+| `POST` | `/v1/demo` | Run the canned molt and persist generations, runs, and lineage |
+| `GET` | `/v1/harness/:agent/:task` | Fetch the latest harness (or the demo starter harness) |
+| `GET` | `/v1/lineage?agent=rook&task=github.security.triage` | List saved harness generations and molt lineage |
+| `POST` | `/v1/speak` | Return Rook audio when ElevenLabs is configured |
+| `GET` | `/llms.txt` | Agent-facing integration summary |
+
+Example:
+
+```sh
+curl -s -X POST https://<your-app>.fly.dev/v1/demo
+```
+
+## Project
+
+- Public source: <https://github.com/elsisiem/shed>
+- Hackathon track: Recursive Harnessing
+- MongoDB Atlas is the durable store. Without `MONGODB_URI`, local development falls back to in-memory storage.
