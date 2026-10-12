@@ -41,6 +41,7 @@
           </div>
         </div>
         <div class="rook-stage" aria-label="Rook, Shed's crystal mascot">
+          <i class="spark s1"></i><i class="spark s2"></i><i class="spark s3"></i><i class="spark s4"></i>
           <div class="stage-orbit orbit-one"></div>
           <div class="stage-orbit orbit-two"></div>
           <div class="rook-label"><span>rook</span><span>harness organism · 001</span></div>
@@ -63,13 +64,18 @@
             <polygon class="facet shard fat" points="200,78 168,210 110,108" />
             <polygon class="facet shard" points="20,78 52,210 110,108" />
             <polygon class="facet shard fat" points="52,210 168,210 110,108" />
-            <circle cx="92" cy="92" r="6" fill="#24190f" />
-            <circle cx="128" cy="92" r="6" fill="#24190f" />
+            <circle class="eye" cx="92" cy="92" r="6" fill="#24190f" />
+            <circle class="eye" cx="128" cy="92" r="6" fill="#24190f" />
             <path d="M88 128 Q110 148 132 128" fill="none" stroke="#24190f" stroke-width="4" stroke-linecap="round" />
           </svg>
           <div class="stage-caption"><span class="stage-spark">✳</span> Starts bulky. Leaves only what works.</div>
         </div>
       </section>
+
+      <div class="marquee" aria-label="Examples of dead weight Rook was carrying">
+        <p class="marquee-label">Rook was carrying</p>
+        <div class="marquee-track" aria-hidden="true"><div><span>jira.create_ticket</span><span>weather.forecast</span><span>stripe.refund</span><span>pagerduty.page</span><span>calendar.book</span><span>slack.post</span><span>Sprint 14 leftovers</span><span>Standup voice</span><span>Refund window is 14 days</span><span>Unrelated personal note</span></div><div><span>jira.create_ticket</span><span>weather.forecast</span><span>stripe.refund</span><span>pagerduty.page</span><span>calendar.book</span><span>slack.post</span><span>Sprint 14 leftovers</span><span>Standup voice</span><span>Refund window is 14 days</span><span>Unrelated personal note</span></div></div>
+      </div>
 
       <section id="demo" class="demo-section">
         <div class="section-heading">
@@ -110,6 +116,10 @@
                 <span id="quality-badge" class="quality-badge" hidden></span>
               </div>
               <p class="meter" id="after-meter">Your next generation appears here</p>
+              <div class="savings" id="savings" hidden>
+                <div class="savings-num"><b id="savings-pct">0</b><span>% lighter</span></div>
+                <div class="savings-bar"><i id="savings-fill"></i></div>
+              </div>
               <ul id="after" class="organ-list after-list" aria-label="Next harness organs">
                 <li class="empty-state">Unused tools, rules, and memories will shed here.</li>
               </ul>

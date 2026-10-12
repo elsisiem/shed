@@ -51,13 +51,55 @@ async function requestJson(url, options) {
   return data;
 }
 
-function li(organ, dead = false) {
+function li(organ, dead = false, index = 0) {
   const el = document.createElement("li");
-  el.textContent = `${organ.title} · ${organ.kind} · ${organ.tokens} tok`;
+  el.style.setProperty("--i", index);
+  const title = document.createElement("span");
+  title.className = "organ-title";
+  title.textContent = organ.title;
+  const kind = document.createElement("span");
+  kind.className = `organ-kind kind-${organ.kind}`;
+  kind.textContent = organ.kind;
+  const tok = document.createElement("span");
+  tok.className = "organ-tok";
+  tok.textContent = `${organ.tokens} tok`;
+  el.append(title, kind, tok);
   if (organ.spine) el.classList.add("spine");
   if (dead) el.classList.add("dead");
   return el;
 }
+
+function renderOrgans(el, organs, dropped = new Set()) {
+  el.replaceChildren(...organs.map((organ, i) => li(organ, dropped.has(organ.id), i)));
+}
+
+function countUp(el, to, duration = 900) {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) { el.textContent = to; return; }
+  const start = performance.now();
+  const tick = (now) => {
+    const t = Math.min(1, (now - start) / duration);
+    el.textContent = Math.round(to * (1 - Math.pow(1 - t, 3)));
+    if (t < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+function showSavings(pct) {
+  const box = document.getElementById("savings");
+  box.hidden = false;
+  const fill = document.getElementById("savings-fill");
+  fill.style.width = "0%";
+  countUp(document.getElementById("savings-pct"), pct);
+  requestAnimationFrame(() => requestAnimationFrame(() => { fill.style.width = `${Math.min(100, Math.max(0, pct))}%`; }));
+}
+
+const revealer = new IntersectionObserver((entries) => {
+  for (const entry of entries) if (entry.isIntersecting) { entry.target.classList.add("in"); revealer.unobserve(entry.target); }
+}, { threshold: 0.12 });
+document.querySelectorAll(".section-heading, .demo-console, .integration-copy, .code-card, .marquee").forEach((el) => {
+  el.classList.add("reveal");
+  revealer.observe(el);
+});
 
 function showStorageStatus(status) {
   if (status.mongo) {
@@ -77,7 +119,7 @@ async function loadInitialState() {
     requestJson("/v1/status"),
   ]);
   showStorageStatus(integrationStatus);
-  beforeEl.replaceChildren(...data.harness.organs.map((organ) => li(organ)));
+  renderOrgans(beforeEl, data.harness.organs);
   beforeMeter.textContent = `${data.tokens.toLocaleString()} estimated tokens / run`;
   beforeGeneration.textContent = `GEN ${data.harness.generation}`;
   setStatus(
@@ -120,8 +162,9 @@ go.addEventListener("click", async () => {
       throw new Error("The server response is missing harness or quality-gate data.");
     }
     const dropped = new Set(data.dropped.map((organ) => organ.id));
-    beforeEl.replaceChildren(...data.before.organs.map((organ) => li(organ, dropped.has(organ.id))));
-    afterEl.replaceChildren(...data.after.organs.map((organ) => li(organ)));
+    renderOrgans(beforeEl, data.before.organs, dropped);
+    renderOrgans(afterEl, data.after.organs);
+    showSavings(data.savedPct);
     beforeMeter.textContent = `${data.run.tokensIn.toLocaleString()} estimated tokens · ${data.run.quality}`;
     afterMeter.textContent = `${data.nextRun.tokensIn.toLocaleString()} estimated tokens · ${data.nextRun.quality} · −${data.savedPct}%`;
     beforeGeneration.textContent = `GEN ${data.before.generation}`;
@@ -155,6 +198,7 @@ reset.addEventListener("click", async () => {
   afterMeter.textContent = "Your next generation appears here";
   beforeGeneration.textContent = "GEN 0";
   qualityBadge.hidden = true;
+  document.getElementById("savings").hidden = true;
   traceDetails.hidden = true;
   traceDetails.open = false;
   log.textContent = "";
