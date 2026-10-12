@@ -10,6 +10,7 @@ import { fatHarness, DEMO_AGENT, DEMO_TASK } from "./seed.ts";
 import { moltLine, speak } from "./voice.ts";
 import { tokensOf } from "./molt.ts";
 
+const db = await connectDb();
 const app = new Hono();
 app.use("*", cors());
 
@@ -27,7 +28,7 @@ app.get("/llms.txt", async (c) => {
 
 app.get("/v1/status", (c) =>
   c.json({
-    mongo: Boolean(env.mongoUri),
+    mongo: db.mode === "mongo",
     exa: Boolean(env.exaKey),
     raindrop: Boolean(env.raindropKey),
     elevenlabs: Boolean(env.elevenKey),
@@ -106,6 +107,5 @@ app.post("/v1/speak", async (c) => {
 
 app.use("/*", serveStatic({ root: "./public" }));
 
-const db = await connectDb();
 console.log(`shed on :${env.port} db=${db.mode}`);
 serve({ fetch: app.fetch, port: env.port });

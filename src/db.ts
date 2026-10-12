@@ -24,13 +24,21 @@ let mongo: { db: Db } | null = null;
 
 export async function connectDb(): Promise<{ mode: "mongo" | "memory" }> {
   if (!env.mongoUri) return { mode: "memory" };
-  const client = new MongoClient(env.mongoUri);
-  await client.connect();
-  mongo = { db: client.db("shed") };
-  await mongo.db.collection("harnesses").createIndex({ agentId: 1, taskKey: 1, generation: -1 });
-  await mongo.db.collection("runs").createIndex({ harnessId: 1 });
-  await mongo.db.collection("lineage").createIndex({ agentId: 1, taskKey: 1 });
-  return { mode: "mongo" };
+  const client = new MongoClient(env.mongoUri, { serverSelectionTimeoutMS: 8000 });
+  try {
+    await client.connect();
+    const db = client.db("shed");
+    await db.collection("harnesses").createIndex({ agentId: 1, taskKey: 1, generation: -1 });
+    await db.collection("runs").createIndex({ harnessId: 1 });
+    await db.collection("lineage").createIndex({ agentId: 1, taskKey: 1 });
+    mongo = { db };
+    return { mode: "mongo" };
+  } catch (error) {
+    console.warn("MongoDB unreachable; falling back to in-memory storage. Check Atlas Network Access.", error instanceof Error ? error.message : error);
+    await client.close().catch(() => undefined);
+    mongo = null;
+    return { mode: "memory" };
+  }
 }
 
 function col(name: string): Collection | null {
