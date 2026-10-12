@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Shed">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2e271d"/><stop offset="1" stop-color="#1a150e"/></linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe8a6"/><stop offset="0.55" stop-color="#d6a64f"/><stop offset="1" stop-color="#78502a"/></linearGradient>
+    <linearGradient id="light" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff4ce"/><stop offset="1" stop-color="#dfbd78"/></linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="58" fill="url(#bg)"/>
+  <circle cx="128" cy="128" r="92" fill="#d6a64f" opacity="0.12"/>
+  <g stroke="#4a3822" stroke-width="3" stroke-linejoin="round">
+    <polygon points="128,36 208,94 180,210 76,210 48,94" fill="url(#gold)"/>
+    <polygon points="128,36 208,94 128,122" fill="url(#light)"/>
+    <polygon points="208,94 180,210 128,122" fill="url(#light)"/>
+    <polygon points="76,210 180,210 128,122" fill="url(#light)"/>
+  </g>
+  <polygon points="128,36 48,94 128,122" fill="none" stroke="#e9c47c" stroke-width="3" stroke-dasharray="6 7" stroke-linejoin="round" transform="translate(-14 -8)" opacity="0.9"/>
+  <circle cx="112" cy="104" r="5" fill="#24190f"/><circle cx="144" cy="104" r="5" fill="#24190f"/>
+  <path d="M110 134 Q128 150 146 134" fill="none" stroke="#24190f" stroke-width="4" stroke-linecap="round"/>
+</svg>
