@@ -55,7 +55,25 @@ app.get("/v1/lineage", async (c) => {
 });
 
 app.post("/v1/demo", async (c) => {
-  const result = await runMoltCycle();
+  const contentType = c.req.header("content-type") ?? "";
+  let sessionId: string | undefined;
+  if (contentType.includes("application/json")) {
+    let body: unknown;
+    try {
+      body = await c.req.json();
+    } catch {
+      return c.json({ error: "Request body must be valid JSON." }, 400);
+    }
+    if (typeof body !== "object" || body === null || !("sessionId" in body)) {
+      return c.json({ error: "Request body must contain a UUID sessionId." }, 400);
+    }
+    if (typeof body.sessionId !== "string" || !/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i.test(body.sessionId)) {
+      return c.json({ error: "sessionId must be a UUID." }, 400);
+    }
+    sessionId = body.sessionId;
+  }
+  const taskKey = sessionId ? `${DEMO_TASK}.demo-${sessionId}` : DEMO_TASK;
+  const result = await runMoltCycle(taskKey);
   const savedPct = result.run.tokensIn
     ? Math.round((result.savedTokens / result.run.tokensIn) * 100)
     : 0;

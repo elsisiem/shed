@@ -1,75 +1,72 @@
-# Shed
+# Shed 🪶
 
-o**Agents molt.** Shed observes which parts of an agent harness a task uses, removes unused rules, tools, and memories, and keeps a protected spine of guardrails. A deterministic quality gate checks the thinner generation; required demo tools are restored if the check fails.
+> **Agents molt.** Your agent is wearing last year's coat. Shed takes it off, keeps the bones, and checks the job still gets done.
 
-Shed is a hackathon prototype, not a general-purpose prompt optimizer. Its included demo uses one fixed GitHub security-triage ticket, keyword-based organ activation, a deterministic pass/fail gate, and illustrative token and dollar estimates. The estimates are not measured provider billing.
+Shed watches which parts of an agent harness a task actually uses (tools, rules, memories), sheds the rest, and keeps a protected **spine** of guardrails that can never be removed. A deterministic quality gate checks the thinner generation. If a required tool was cut by mistake, it grows back.
 
-## Try the demo
+**Live demo:** <https://shed-molt.fly.dev> · **Track:** Recursive Harnessing
+
+## Meet Rook
+
+Rook is Shed's crystal mascot and the demo agent: a blunt, slightly smug security-triage bot that started life as a kitchen sink. Jira, PagerDuty, Stripe refunds, a weather forecast ("why is this on a security bot"), and a note about a roommate's HDMI cable all came along for the ride. Each molt, Rook gets leaner and a little more pleased with itself. Click **Let Rook talk** (needs ElevenLabs) to hear the molt receipt in Rook's voice.
+
+## How a molt works
+
+1. **Observe**: run the harness on a task and record which organs fire.
+2. **Shed**: drop non-spine organs that never fired.
+3. **Gate**: re-run the thinner harness. If a required tool is missing, restore it.
+4. **Record**: save the new generation, the run, and the lineage (parent, what was dropped, tokens saved).
+
+> **Honest scope.** Shed is a hackathon prototype, not a general prompt optimizer. The demo uses one fixed GitHub security-triage ticket, keyword-based organ activation, a deterministic pass/fail gate, and illustrative token and dollar estimates. Estimates are not measured provider billing.
+
+## Try it locally
 
 ```powershell
 npm install
-npm run check
+npm run check   # typecheck + tests
 npm run dev
 ```
 
-Open <http://localhost:8080> and click **Molt the harness**. The first run sheds unused demo organs; later runs continue from the saved generation. The optional **Let Rook talk** button requires ElevenLabs.
-
-## Atlas setup
-
-Finalists must use the hackathon-provided MongoDB Atlas Sandbox. This project stores harness generations, runs, and lineage in the `shed` database.
-
-1. Use the Atlas sandbox cluster and database user created for this project.
-2. In the ignored local `.env` file, set `MONGODB_URI` to the cluster connection string, including `/shed` before any query parameters.
-3. In Atlas **Network Access**, allow connections from the app host. For a quick demo, `0.0.0.0/0` is broad; prefer a narrower allowlist when possible.
-4. Start the app and check `GET /v1/status` reports `"mongo": true`.
-
-Keep the URI private. Never commit `.env` or paste connection strings and passwords into chat.
-
-## Deploy to Fly.io
-
-MongoDB Atlas is required for durable hosted data; the other providers below are optional.
-
-1. Install `flyctl` and authenticate locally with `fly auth login`.
-2. Confirm or choose a globally unique Fly app name in `fly.toml`.
-3. Add `MONGODB_URI` to the app's **Fly secrets** using the Fly dashboard or CLI secret manager. Do not commit it or put it in `[env]` in `fly.toml`.
-4. Deploy from the repository with `fly deploy`.
-5. Verify `https://<your-app>.fly.dev/healthz`, then check `GET /v1/status` reports `"mongo": true`.
-
-Atlas Network Access must permit the Fly app to connect. The `/healthz` endpoint checks that the web process is responsive; confirm Mongo persistence separately by running the demo and checking `GET /v1/lineage`.
-
-## Optional integrations
-
-None of these keys are needed to deploy the core demo:
-
-| Integration | Environment variables | What it enables |
-| --- | --- | --- |
-| Exa | `EXA_API_KEY` | Structured web search for a live GHSA practice seed on the first molt |
-| AgentMail | `AGENTMAIL_API_KEY`, `AGENTMAIL_INBOX` | Email molt receipts; `MOLT_NOTIFY_TO` can override the recipient |
-| ElevenLabs | `ELEVENLABS_API_KEY` | Rook's optional spoken molt receipt; `ELEVENLABS_VOICE_ID` can select a voice |
-| Raindrop | `RAINDROP_WRITE_KEY`, optional `RAINDROP_PROJECT` | Task outcome and token-savings signals |
-
-Store development values in the ignored `.env` file and hosted values in the provider's secret manager. Credentials previously pasted into chat should be revoked and replaced before use. Never paste replacement keys, database passwords, or connection strings into chat or commit them.
+Open <http://localhost:8080> and click **Molt the harness**. The first run sheds unused organs; later runs continue from the saved generation, and **Reset demo** starts a fresh lineage. Without `MONGODB_URI` the app uses in-memory storage, so history disappears on restart.
 
 ## HTTP API
 
 | Method | Route | Description |
 | --- | --- | --- |
 | `GET` | `/healthz` | Process health |
-| `GET` | `/v1/status` | Which optional integrations are configured |
-| `POST` | `/v1/demo` | Run the canned molt and persist generations, runs, and lineage |
-| `GET` | `/v1/harness/:agent/:task` | Fetch the latest harness (or the demo starter harness) |
-| `GET` | `/v1/lineage?agent=rook&task=github.security.triage` | List saved harness generations and molt lineage |
-| `POST` | `/v1/speak` | Return Rook audio when ElevenLabs is configured |
+| `GET` | `/v1/status` | Which integrations are configured |
+| `POST` | `/v1/demo` | Run the canned molt and persist generations, runs, and lineage. Optional `{"sessionId":"<UUID>"}` isolates a fresh lineage |
+| `GET` | `/v1/harness/:agent/:task` | Latest harness (or the starter harness) |
+| `GET` | `/v1/lineage?agent=rook&task=github.security.triage` | Saved generations and molt lineage |
+| `POST` | `/v1/speak` | Rook audio when ElevenLabs is configured |
 | `GET` | `/llms.txt` | Agent-facing integration summary |
 
-Example:
-
 ```sh
-curl -s -X POST https://<your-app>.fly.dev/v1/demo
+curl -s -X POST https://shed-molt.fly.dev/v1/demo
 ```
+
+## Configuration
+
+Copy `.env.example` to `.env` (git-ignored). Only MongoDB is needed for durable data; everything else is optional.
+
+| Integration | Variables | Enables |
+| --- | --- | --- |
+| MongoDB Atlas | `MONGODB_URI` | Durable generations, runs, lineage (database `shed`) |
+| Exa | `EXA_API_KEY` | Live GHSA practice seed on the first molt |
+| AgentMail | `AGENTMAIL_API_KEY`, `AGENTMAIL_INBOX`, optional `MOLT_NOTIFY_TO` | Emailed molt receipts |
+| ElevenLabs | `ELEVENLABS_API_KEY`, optional `ELEVENLABS_VOICE_ID` | Rook's spoken receipt |
+| Raindrop | `RAINDROP_WRITE_KEY`, optional `RAINDROP_PROJECT` | Outcome and token-savings signals |
+
+For Atlas, include `/shed` in the connection string before any query parameters and allow the app host in **Network Access** (`0.0.0.0/0` is broad; prefer something narrower). Confirm `GET /v1/status` reports `"mongo": true`. Keep URIs and keys private: never commit them or paste them into chat, and revoke any that were.
+
+## Deploy to Fly.io
+
+1. Install `flyctl` and run `fly auth login`.
+2. Pick a globally unique app name in `fly.toml`.
+3. Set secrets with `fly secrets set MONGODB_URI=...` (never in `[env]`).
+4. `fly deploy`
+5. Check `https://<your-app>.fly.dev/healthz`, then run the demo and confirm persistence via `GET /v1/lineage`.
 
 ## Project
 
-- Public source: <https://github.com/elsisiem/shed>
-- Hackathon track: Recursive Harnessing
-- MongoDB Atlas is the durable store. Without `MONGODB_URI`, local development falls back to in-memory storage.
+Source: <https://github.com/elsisiem/shed>

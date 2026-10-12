@@ -50,4 +50,23 @@ describe("molt", () => {
     expect(second.nextRun.quality).toBe("pass");
     expect(second.savedTokens).toBe(0);
   });
+
+  it("starts an isolated demo task with the full harness", async () => {
+    const taskKey = "github.security.triage.demo-recording-test";
+    const result = await runMoltCycle(taskKey);
+
+    expect(result.before.taskKey).toBe(taskKey);
+    expect(result.before.generation).toBe(0);
+    expect(result.before.organs).toHaveLength(fatHarness().organs.length);
+    expect(result.after.generation).toBe(1);
+    expect(result.nextRun.quality).toBe("pass");
+  });
+
+  it("gives every session its own harness ids so lineages never overwrite each other", async () => {
+    const a = await runMoltCycle("github.security.triage.demo-session-a");
+    const b = await runMoltCycle("github.security.triage.demo-session-b");
+
+    expect(a.after.id).not.toBe(b.after.id);
+    expect(a.before.id).not.toBe(b.before.id);
+  });
 });

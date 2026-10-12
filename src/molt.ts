@@ -65,7 +65,7 @@ export function proposeMolt(harness: Harness, run: RunRecord, extra: Organ[] = [
     if (!merged.some((o) => o.id === organ.id)) merged.push(organ);
   }
   return {
-    id: `h-gen${harness.generation + 1}`,
+    id: `h-gen${harness.generation + 1}-${randomUUID().slice(0, 8)}`,
     agentId: harness.agentId,
     taskKey: harness.taskKey,
     generation: harness.generation + 1,

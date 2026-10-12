@@ -7,10 +7,11 @@ import { latestHarness, saveHarness, saveLineage, saveRun } from "./db.ts";
 import { trackRun, trackSavings } from "./raindrop.ts";
 import { sendReceipt } from "./mail.ts";
 
-export async function runMoltCycle(): Promise<MoltResult> {
-  const previous = await latestHarness(DEMO_AGENT, DEMO_TASK);
+export async function runMoltCycle(taskKey = DEMO_TASK): Promise<MoltResult> {
+  const previous = await latestHarness(DEMO_AGENT, taskKey);
   const before = previous ?? fatHarness();
   if (!previous) {
+    before.taskKey = taskKey;
     before.id = `h-gen0-${randomUUID().slice(0, 8)}`;
     before.createdAt = new Date().toISOString();
   }

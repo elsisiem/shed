@@ -7,7 +7,7 @@ Agents call this because every unused tool in a prompt is a tax they pay on ever
 ## Integrate
 
 POST /v1/demo
-  Run the canned security-triage molt. No body.
+  Run the canned security-triage molt. Optional JSON body {"sessionId":"<UUID>"} creates an isolated demo lineage.
 
 GET /v1/harness/:agent/:task
   Latest generation for that agent+task. Start with rook / github.security.triage
@@ -23,4 +23,6 @@ GET /v1/status
 
 ## One curl
 
-curl -s -X POST $HOST/v1/demo | jq '{gen: .after.generation, dropped: [.dropped[].title], savedTokens, savedPct, quality: .nextRun.quality}'
+curl -s -X POST https://shed-molt.fly.dev/v1/demo | jq '{gen: .after.generation, dropped: [.dropped[].title], savedTokens, savedPct, quality: .nextRun.quality}'
+
+The browser demo uses an isolated session ID so each new demo can start with a fresh harness. Its quality check is deterministic and token savings are illustrative estimates, not live model billing.

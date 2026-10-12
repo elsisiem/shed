@@ -3,83 +3,151 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Shed — agents molt</title>
+    <meta name="theme-color" content="#f4efdf" />
+    <meta name="description" content="Shed trims unused agent harness tools, rules, and memories while preserving the quality gate." />
+    <title>Shed — a leaner coat for agents</title>
     <link rel="stylesheet" href="/app.css" />
   </head>
   <body>
-    <div class="noise"></div>
-    <header>
-      <span class="mark">SHED</span>
+    <header class="site-header">
+      <a class="brand" href="#" aria-label="Shed home">
+        <span class="brand-mark" aria-hidden="true">✳</span>
+        <span>SHED</span>
+      </a>
       <nav>
-        <a href="#demo">demo</a>
-        <a href="#integrate">integrate</a>
+        <a href="#demo">Try the demo</a>
+        <a href="#integrate">For agents</a>
+        <a class="nav-github" href="https://github.com/elsisiem/shed" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a>
       </nav>
     </header>
 
     <main>
       <section class="hero">
-        <svg id="rook" viewBox="0 0 220 240" aria-hidden="true">
-          <defs>
-            <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stop-color="#f4d38a" />
-              <stop offset="1" stop-color="#7a5a2a" />
-            </linearGradient>
-          </defs>
-          <polygon class="facet fat" points="110,12 200,78 168,210 52,210 20,78" />
-          <polygon class="facet fat" points="110,12 200,78 110,108" />
-          <polygon class="facet" points="110,12 20,78 110,108" />
-          <polygon class="facet fat" points="200,78 168,210 110,108" />
-          <polygon class="facet" points="20,78 52,210 110,108" />
-          <polygon class="facet fat" points="52,210 168,210 110,108" />
-          <circle cx="92" cy="92" r="6" fill="#1a1208" />
-          <circle cx="128" cy="92" r="6" fill="#1a1208" />
-          <path d="M88 128 Q110 148 132 128" fill="none" stroke="#1a1208" stroke-width="4" />
-        </svg>
-        <div>
-          <p class="eyebrow">recursive harnessing</p>
-          <h1>Your agent is wearing last year’s coat.</h1>
+        <div class="hero-copy">
+          <p class="eyebrow">A self-tuning harness for agents</p>
+          <h1>Your agent is wearing <em>last year’s</em> coat.</h1>
           <p class="lede">
-            Most harnesses ship every rule, every tool, every leftover memory. Plenty never fires. You still pay for it.
-            <b>Shed watches which organs actually work, then molts the rest.</b>
-            Same task. Fewer tokens. If quality dips, they grow back.
+            Every unused tool and forgotten rule still takes up context.
+            <b>Shed removes the dead weight, protects the safety spine, and checks that the task still passes.</b>
           </p>
-          <p class="tiny">Built for agents. Demo for humans. Lineage in Mongo. Signals in Raindrop. Voice by Rook.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#demo">Watch a molt <span aria-hidden="true">↓</span></a>
+            <span class="hero-note">One click. Same task. Leaner harness.</span>
+          </div>
+          <div class="hero-proof">
+            <span><i class="proof-dot"></i>Quality-gated</span>
+            <span><i class="proof-dot"></i>Guardrails stay</span>
+            <span><i class="proof-dot"></i>Generation lineage</span>
+          </div>
+        </div>
+        <div class="rook-stage" aria-label="Rook, Shed's crystal mascot">
+          <div class="stage-orbit orbit-one"></div>
+          <div class="stage-orbit orbit-two"></div>
+          <div class="rook-label"><span>rook</span><span>harness organism · 001</span></div>
+          <svg id="rook" viewBox="0 0 220 240" role="img" aria-labelledby="rook-title">
+            <title id="rook-title">Rook the crystal mascot</title>
+            <defs>
+              <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#ffe8a6" />
+                <stop offset="0.55" stop-color="#d6a64f" />
+                <stop offset="1" stop-color="#78502a" />
+              </linearGradient>
+              <linearGradient id="g-light" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#fff4ce" />
+                <stop offset="1" stop-color="#dfbd78" />
+              </linearGradient>
+            </defs>
+            <polygon class="facet shell" points="110,12 200,78 168,210 52,210 20,78" />
+            <polygon class="facet shard fat" points="110,12 200,78 110,108" />
+            <polygon class="facet shard" points="110,12 20,78 110,108" />
+            <polygon class="facet shard fat" points="200,78 168,210 110,108" />
+            <polygon class="facet shard" points="20,78 52,210 110,108" />
+            <polygon class="facet shard fat" points="52,210 168,210 110,108" />
+            <circle cx="92" cy="92" r="6" fill="#24190f" />
+            <circle cx="128" cy="92" r="6" fill="#24190f" />
+            <path d="M88 128 Q110 148 132 128" fill="none" stroke="#24190f" stroke-width="4" stroke-linecap="round" />
+          </svg>
+          <div class="stage-caption"><span class="stage-spark">✳</span> Starts bulky. Leaves only what works.</div>
         </div>
       </section>
 
-      <section id="demo">
-        <div class="bar">
-          <button id="go" type="button">Molt the harness</button>
-          <button id="speak" type="button" disabled>Let Rook talk</button>
-          <span id="status">fat generation 0 loaded</span>
+      <section id="demo" class="demo-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Live, deterministic demo</p>
+            <h2>One task. Before &amp; after.</h2>
+          </div>
+          <p class="section-aside">A GitHub security report goes in. A slimmer, quality-gated harness comes out.</p>
         </div>
-        <p class="tiny">Demo quality is deterministic; token and dollar figures are illustrative estimates, not live provider billing.</p>
-        <div class="cols">
-          <article>
-            <h2>Before</h2>
-            <p class="meter" id="before-meter">— tokens</p>
-            <ul id="before"></ul>
-          </article>
-          <article>
-            <h2>After</h2>
-            <p class="meter" id="after-meter">— tokens</p>
-            <ul id="after"></ul>
-          </article>
+        <div class="demo-console">
+          <div class="demo-toolbar">
+            <div class="demo-controls">
+              <button id="go" class="button button-primary" type="button"><span class="button-icon" aria-hidden="true">✳</span> Molt the harness</button>
+              <button id="reset" class="button button-quiet" type="button">Reset demo</button>
+              <button id="speak" class="button button-quiet button-speak" type="button" disabled><span aria-hidden="true">♫</span> Let Rook talk</button>
+            </div>
+            <div class="run-status" role="status" aria-live="polite">
+              <span id="status-dot" class="status-dot" aria-hidden="true"></span>
+              <span id="status">Preparing demo…</span>
+            </div>
+          </div>
+          <div class="storage-notice" id="storage-notice" role="status">
+            <span class="storage-icon" aria-hidden="true">◈</span>
+            <span id="storage-message">Checking storage…</span>
+          </div>
+          <div class="cols">
+            <article class="harness-card" aria-labelledby="before-heading">
+              <div class="card-heading">
+                <div><span class="card-kicker">CURRENT COAT</span><h3 id="before-heading">Before</h3></div>
+                <span class="generation-tag" id="before-generation">GEN 0</span>
+              </div>
+              <p class="meter" id="before-meter">— estimated tokens / run</p>
+              <ul id="before" class="organ-list" aria-label="Current harness organs"></ul>
+            </article>
+            <article class="harness-card after-card" aria-labelledby="after-heading">
+              <div class="card-heading">
+                <div><span class="card-kicker">QUALITY-GATED</span><h3 id="after-heading">After</h3></div>
+                <span id="quality-badge" class="quality-badge" hidden></span>
+              </div>
+              <p class="meter" id="after-meter">Your next generation appears here</p>
+              <ul id="after" class="organ-list after-list" aria-label="Next harness organs">
+                <li class="empty-state">Unused tools, rules, and memories will shed here.</li>
+              </ul>
+            </article>
+          </div>
+          <div class="result-footer">
+            <p class="estimate-note"><span aria-hidden="true">ⓘ</span> Token and dollar values are illustrative estimates; quality is a deterministic demo gate, not a live model evaluation.</p>
+            <details id="trace-details" class="trace-details" hidden>
+              <summary>View run trace <span aria-hidden="true">↗</span></summary>
+              <pre id="log"></pre>
+            </details>
+          </div>
         </div>
-        <pre id="log" hidden></pre>
       </section>
 
-      <section id="integrate">
-        <h2>One call. Next run is cheaper.</h2>
-        <pre>curl -s -X POST https://HOST/v1/demo
-GET  /v1/harness/rook/github.security.triage
-GET  /llms.txt</pre>
-        <p>
-          Agents don’t “compress a prompt.” They <i>revoke tool access</i>, drop dead rules, and keep a spine of guardrails.
-          Raindrop gets the pass/fail signal. That’s the molt metric — not a vibe.
-        </p>
+      <section id="integrate" class="integrate-section">
+        <div class="integration-copy">
+          <p class="eyebrow">Built to be called by agents</p>
+          <h2>One call. A leaner next run.</h2>
+          <p>Send an agent to molt after the task. Fetch its next harness on the next run. Every generation has a parent, a quality check, and a record of what was shed.</p>
+          <a class="text-link" href="https://github.com/elsisiem/shed" target="_blank" rel="noreferrer">Explore the open-source project <span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="code-card">
+          <div class="code-bar"><span></span><span></span><span></span><label>agent terminal</label></div>
+          <pre><code><span class="code-comment"># See the current harness</span>
+curl https://shed-molt.fly.dev/v1/harness/rook/github.security.triage
+
+<span class="code-comment"># Run the security-triage demo</span>
+curl -X POST https://shed-molt.fly.dev/v1/demo</code></pre>
+          <p class="code-footnote"><span class="api-dot"></span> Small HTTP API · no SDK required</p>
+        </div>
       </section>
     </main>
+    <footer class="site-footer">
+      <a class="brand" href="#"><span class="brand-mark" aria-hidden="true">✳</span><span>SHED</span></a>
+      <span>Keep the spine. Lose the excess.</span>
+      <a href="https://github.com/elsisiem/shed" target="_blank" rel="noreferrer">Open source on GitHub ↗</a>
+    </footer>
     <script type="module" src="/app.js"></script>
   </body>
 </html>
