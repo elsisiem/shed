@@ -1,122 +1,132 @@
-<p align="center">
-  <img src="assets/icon.svg" alt="Shed" width="112" height="112" />
-</p>
-
+<p align="center"><img src="assets/icon.svg" width="72" alt="Shed logo"></p>
 <h1 align="center">Shed</h1>
-
+<p align="center"><b>Agents molt.</b> Shed drops the tools, rules and memories a task never uses, keeps the guardrails, and checks the job still passes.</p>
 <p align="center">
-  <b>Agents molt.</b> Your agent is wearing last year's coat.<br />
-  Shed takes it off, keeps the bones, and checks the job still gets done.
+  <a href="https://shed-molt.fly.dev">Live demo</a> ·
+  <a href="#how-it-works">How it works</a> ·
+  <a href="#use-it">Use it</a> ·
+  <a href="#run-locally">Run locally</a>
 </p>
-
 <p align="center">
-  <a href="https://shed-molt.fly.dev"><b>Live demo</b></a> &nbsp;|&nbsp;
-  <a href="#how-a-molt-works">How it works</a> &nbsp;|&nbsp;
-  <a href="#http-api">API</a> &nbsp;|&nbsp;
-  <a href="#run-it-locally">Run locally</a> &nbsp;|&nbsp;
-  <a href="#deploy-to-flyio">Deploy</a>
+  <a href="https://github.com/elsisiem/shed/actions/workflows/ci.yml"><img src="https://github.com/elsisiem/shed/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <img src="https://img.shields.io/badge/license-MIT-111318?style=flat-square" alt="MIT license">
+  <img src="https://img.shields.io/badge/TypeScript-5-111318?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript">
 </p>
+<p align="center"><img src="docs/images/hero.jpg" alt="Shed landing page" width="100%"></p>
 
-<p align="center">
-  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5.9-3178c6?style=flat-square" />
-  <img alt="Hono" src="https://img.shields.io/badge/Hono-4-e36002?style=flat-square" />
-  <img alt="MongoDB Atlas" src="https://img.shields.io/badge/MongoDB-Atlas-47a248?style=flat-square" />
-  <img alt="Deployed on Fly.io" src="https://img.shields.io/badge/deployed-Fly.io-8b5cf6?style=flat-square" />
-  <img alt="Tests" src="https://img.shields.io/badge/tests-vitest-6e9f18?style=flat-square" />
-</p>
+## Why
 
----
+Your agent is wearing last year's coat. Agent harnesses only grow: every tool, rule and memory that was useful once stays in the context window, and every run pays for all of it. Shed watches which parts of a harness a task actually uses and sheds the rest. A protected **spine** of guardrails is never removed, and a deterministic quality gate re-runs the thinner harness before it is kept. Every generation is stored with its parent, so you can see what was shed and when.
 
-## Overview
+Rook is the demo agent: a security-triage bot that started life as a kitchen sink. Jira, PagerDuty, Stripe refunds, a weather forecast and a note about a roommate's HDMI cable all came along. Each molt, Rook gets leaner and a little more pleased with itself.
 
-Agent harnesses only ever grow. Every tool, rule, and memory that was useful once stays in the context window forever, and every run pays for all of it.
+## How it works
 
-Shed watches which parts of a harness a task actually uses (tools, rules, policies, memories), sheds the rest, and keeps a protected **spine** of guardrails that can never be removed. A deterministic quality gate re-runs the thinner harness. If a required tool was cut by mistake, it grows back. Every generation is stored with its parent, so you can see exactly what was shed and when.
+An **organ** is any piece of a harness: a tool, rule, policy, memory or guardrail. The **spine** is the set of guardrail organs that always stay. A **generation** is one version of the harness, and each molt produces the next.
 
-> **Scope.** Shed is a prototype, not a general prompt optimizer. The demo uses one fixed GitHub security-triage ticket, keyword-based organ activation, a deterministic pass/fail gate, and illustrative token and dollar estimates. Estimates are not measured provider billing.
-
-## Meet Rook
-
-Rook is Shed's crystal mascot and the demo agent: a blunt, slightly smug security-triage bot that started life as a kitchen sink. Jira, PagerDuty, Stripe refunds, a weather forecast ("why is this on a security bot"), and a note about a roommate's HDMI cable all came along for the ride. Each molt, Rook gets leaner and a little more pleased with itself.
-
-## How a molt works
-
-| Step | What happens |
-| --- | --- |
-| **Observe** | Run the harness on a task and record which organs fire. |
-| **Shed** | Drop non-spine organs that never fired. |
-| **Gate** | Re-run the thinner harness. If a required tool is missing, restore it. |
-| **Record** | Save the new generation, the run, and the lineage (parent, what was dropped, tokens saved). |
-
-Vocabulary: an **organ** is any piece of a harness (tool, rule, policy, memory, or guardrail). The **spine** is the set of guardrail organs that always stay. A **generation** is one version of the harness; each molt produces the next.
-
-## Features
-
-- Spine protection: guardrails such as "never leak secrets" are never shed.
-- Quality gate with automatic regrowth of required tools.
-- Generation lineage persisted to MongoDB Atlas, with an in-memory fallback for local development.
-- Isolated demo sessions, so concurrent visitors never overwrite each other's history.
-- Optional integrations: Exa live seeding, AgentMail receipts, ElevenLabs voice for Rook, Raindrop signals.
-- A small HTTP API and an `llms.txt` so other agents can call it directly.
-
-## Run it locally
-
-```powershell
-npm install
-npm run check   # typecheck + tests
-npm run dev
+```mermaid
+flowchart LR
+  A["Load latest generation,<br/>or the starter harness"] --> B["Run on the ticket,<br/>record which organs fire"]
+  B --> C["Propose molt:<br/>drop non-spine organs that never fired"]
+  C --> D{"Gate:<br/>re-run the thinner harness"}
+  D -- pass --> E["Persist generation,<br/>runs and lineage"]
+  D -- fail --> F["Restore the missing<br/>required tools"] --> E
+  E --> G["Notify: Raindrop signals,<br/>AgentMail receipt"]
 ```
 
-Open <http://localhost:8080> and click **Molt the harness**. The first run sheds unused organs; later runs continue from the saved generation, and **Reset demo** starts a fresh lineage. Without `MONGODB_URI`, storage is in memory and history disappears on restart.
+- **Run.** A non-spine organ fires when the ticket text contains one of its keywords. Spine organs always fire. `runHarness` in `src/molt.ts`.
+- **Propose.** The next generation keeps the spine and the organs that fired. On the first molt, Exa can add organs seeded from live web sources. `proposeMolt` in `src/molt.ts`, `src/exa.ts`.
+- **Gate.** The thinner harness runs again. The task passes only if the three required tools (`github.get_issue`, `severity.classify`, `draft.reply`) fire. If one was cut, it is restored from the parent. `gateMolt` in `src/molt.ts`.
+- **Persist.** Both harnesses, both runs and a lineage record (parent, dropped ids, tokens saved) are saved. `src/cycle.ts`, `src/db.ts`.
+- **Notify.** Optional Raindrop signals and an AgentMail receipt. A failure here is reported in the response and does not fail the molt. `src/raindrop.ts`, `src/mail.ts`.
 
-## HTTP API
+On the demo ticket, with no integrations configured, the first molt takes the starter harness from 17 organs and 2,360 estimated tokens per run to 6 organs and 800 (66% less). The gate passes before and after. A second molt finds nothing more to shed and continues from generation 1.
+
+## Use it
+
+Open the [live demo](https://shed-molt.fly.dev) and press **Molt the harness**, or call the API:
+
+```sh
+curl -s -X POST https://shed-molt.fly.dev/v1/demo \
+  | jq '{gen: .after.generation, dropped: [.dropped[].title], savedTokens, savedPct, quality: .nextRun.quality}'
+```
 
 | Method | Route | Description |
 | --- | --- | --- |
 | `GET` | `/healthz` | Process health |
-| `GET` | `/v1/status` | Which integrations are configured |
-| `POST` | `/v1/demo` | Run the canned molt and persist generations, runs, and lineage. Optional `{"sessionId":"<UUID>"}` isolates a fresh lineage |
-| `GET` | `/v1/harness/:agent/:task` | Latest harness (or the starter harness) |
+| `GET` | `/v1/status` | Which integrations are configured, for example `{"mongo":false,"exa":false,...}` |
+| `POST` | `/v1/demo` | Run the canned molt and persist generations, runs and lineage. Optional `{"sessionId":"<UUID>"}` isolates a fresh lineage |
+| `GET` | `/v1/harness/:agent/:task` | Latest harness, or the starter harness. Try `rook/github.security.triage` |
 | `GET` | `/v1/lineage?agent=rook&task=github.security.triage` | Saved generations and molt lineage |
-| `POST` | `/v1/speak` | Rook audio when ElevenLabs is configured |
+| `POST` | `/v1/speak` | Rook audio as `audio/mpeg`. Returns 503 without an ElevenLabs key |
 | `GET` | `/llms.txt` | Agent-facing integration summary |
 
+`POST /v1/demo` returns `before` and `after` (harnesses), `run` and `nextRun`, `dropped`, `kept`, `savedTokens`, `savedUsd`, `savedPct`, `warnings`, `mail`, and a one-line `line` for Rook to speak.
+
+## Run locally
+
+Prerequisite: Node 22.
+
 ```sh
-curl -s -X POST https://shed-molt.fly.dev/v1/demo
+npm ci
+cp .env.example .env   # every variable is optional
+npm run check          # typecheck and tests
+npm run dev            # http://localhost:8080
 ```
+
+Open the page and click **Molt the harness**. The first run sheds unused organs, later runs continue from the saved generation, and **Reset demo** starts a fresh lineage.
 
 ## Configuration
 
-Copy `.env.example` to `.env` (git-ignored). Only MongoDB is needed for durable data; everything else is optional.
+Copy `.env.example` to `.env` (git-ignored). Every variable is optional. Without `MONGODB_URI`, data lives in memory.
 
-| Integration | Variables | Enables |
+| Variable | Required | Purpose |
 | --- | --- | --- |
-| MongoDB Atlas | `MONGODB_URI` | Durable generations, runs, lineage (database `shed`) |
-| Exa | `EXA_API_KEY` | Live GHSA practice seed on the first molt |
-| AgentMail | `AGENTMAIL_API_KEY`, `AGENTMAIL_INBOX`, optional `MOLT_NOTIFY_TO` | Emailed molt receipts |
-| ElevenLabs | `ELEVENLABS_API_KEY`, optional `ELEVENLABS_VOICE_ID` | Rook's spoken receipt |
-| Raindrop | `RAINDROP_WRITE_KEY`, optional `RAINDROP_PROJECT` | Outcome and token-savings signals |
+| `MONGODB_URI` | No | Durable generations, runs and lineage in the `shed` database. Unset or unreachable means in-memory storage |
+| `EXA_API_KEY` | No | Seeds extra organs from live web sources on the first molt |
+| `AGENTMAIL_API_KEY` | No | Emailed molt receipts |
+| `AGENTMAIL_INBOX` | No | Inbox the receipt is sent from. Receipts are skipped without it |
+| `MOLT_NOTIFY_TO` | No | Receipt recipient. Defaults to `AGENTMAIL_INBOX` |
+| `RAINDROP_WRITE_KEY` | No | Run events and token-savings signals |
+| `RAINDROP_PROJECT` | No | Raindrop project id. Default `shed` |
+| `ELEVENLABS_API_KEY` | No | Spoken receipts from `POST /v1/speak` |
+| `ELEVENLABS_VOICE_ID` | No | Voice id. Defaults to a built-in voice |
+| `PORT` | No | Listen port. Default 8080 |
+| `PUBLIC_URL` | No | Read by `src/env.ts`, not used by any route yet |
 
-For Atlas, include `/shed` in the connection string before any query parameters and allow the app host under **Network Access**. Confirm `GET /v1/status` reports `"mongo": true`. Keep URIs and keys private and never commit them.
+Storage is MongoDB when `MONGODB_URI` is set and reachable, and in-memory otherwise. The public demo currently runs in memory, so lineage resets on restart. For Atlas, allow the app host under Network Access, then confirm `GET /v1/status` reports `"mongo": true`.
 
-## Deploy to Fly.io
+## Deploy
 
 1. Install `flyctl` and run `fly auth login`.
 2. Pick a globally unique app name in `fly.toml`.
 3. Set secrets with `fly secrets set MONGODB_URI=...` (never in `[env]`).
 4. Run `fly deploy`.
-5. Check `https://<your-app>.fly.dev/healthz`, then run the demo and confirm persistence via `GET /v1/lineage`.
+5. Check `https://<your-app>.fly.dev/healthz`, run the demo, and confirm persistence with `GET /v1/lineage`.
 
 ## Project layout
 
 ```
-src/        server, molt engine, storage, integrations
-public/     the demo site (static HTML, CSS, JS)
-test/       vitest suite
-assets/     icon and brand assets
+src/server.ts    Hono server and HTTP API
+src/cycle.ts     one full molt cycle
+src/molt.ts      run, propose and gate
+src/seed.ts      starter harness and demo ticket
+src/db.ts        MongoDB storage with in-memory fallback
+src/exa.ts       optional live seeding
+src/mail.ts      optional AgentMail receipt
+src/raindrop.ts  optional signals
+src/voice.ts     optional ElevenLabs audio
+public/          the demo site (static HTML, CSS, JS) and llms.txt
+test/            vitest suite
 ```
 
-## Links
+## Status
 
-- Live demo: <https://shed-molt.fly.dev>
-- Source: <https://github.com/elsisiem/shed>
+- Shed is a prototype, not a general prompt optimizer. The demo uses one fixed GitHub security-triage ticket, keyword-based organ activation and a deterministic pass or fail gate.
+- Token and dollar figures are illustrative estimates at $3 per million tokens. They are not measured provider billing.
+- The public demo runs without MongoDB (`/v1/status` reports `"mongo": false`), so lineage lives in memory and resets on restart. The Fly machine also stops when idle.
+- The 6 tests cover the molt engine and the cycle, using in-memory storage. The MongoDB path and the optional integrations are not exercised in CI.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
