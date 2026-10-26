@@ -86,6 +86,6 @@ export function gateMolt(before: Harness, proposed: Harness, ticket = DEMO_TICKE
   return {
     ...proposed,
     organs: [...proposed.organs, ...restored],
-    moltNote: `${proposed.moltNote} Quality gate failed — grew back ${restored.map((o) => o.title).join(", ") || "nothing"}.`,
+    moltNote: `${proposed.moltNote} Quality gate failed. Grew back ${restored.map((o) => o.title).join(", ") || "nothing"}.`,
   };
 }

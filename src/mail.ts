@@ -13,7 +13,7 @@ export async function sendReceipt(opts: {
   const sent = await client.inboxes.messages.send(env.agentmailInbox, {
     to,
     subject: `Shed gen ${opts.generation}: dropped ${opts.dropped} organs`,
-    text: `Your harness molted to generation ${opts.generation}.\n\nDropped: ${opts.dropped} unused organs\nTokens no longer billed every run: ${opts.savedTokens}\n~$ ${opts.savedUsd.toFixed(6)} per run at $3/MTok\n\nSame task. Thinner coat.\n— Rook`,
+    text: `Your harness molted to generation ${opts.generation}.\n\nDropped: ${opts.dropped} unused organs\nTokens no longer billed every run: ${opts.savedTokens}\n~$ ${opts.savedUsd.toFixed(6)} per run at $3/MTok\n\nSame task. Thinner coat.\nRook`,
   });
   return { messageId: sent.messageId, to };
 }

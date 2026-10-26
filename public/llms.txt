@@ -19,7 +19,7 @@ POST /v1/speak
   {"text":"..."} → audio/mpeg (ElevenLabs, optional)
 
 GET /v1/status
-  Which sponsors are wired.
+  Which integrations are configured.
 
 ## One curl
 
