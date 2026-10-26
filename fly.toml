@@ -6,7 +6,6 @@ primary_region = "sjc"
 [env]
   NODE_ENV = "production"
   PORT = "8080"
-  PUBLIC_URL = "https://shed-molt.fly.dev"
   RAINDROP_PROJECT = "shed"
 
 [http_service]
