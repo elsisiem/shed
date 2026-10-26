@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "A self-molting agent harness. Drop unused rules, tools, and memory. Pay for the coat you actually wear.",
+  "description": "Agents molt. Shed drops the tools, rules and memories a task never uses, keeps the guardrails, and checks the job still passes.",
   "scripts": {
     "dev": "tsx watch --env-file=.env src/server.ts",
     "start": "tsx --env-file=.env src/server.ts",
