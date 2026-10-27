@@ -1,6 +1,5 @@
 export const env = {
   port: Number(process.env.PORT ?? 8080),
-  publicUrl: process.env.PUBLIC_URL ?? "http://localhost:8080",
   exaKey: process.env.EXA_API_KEY ?? "",
   mongoUri: process.env.MONGODB_URI ?? "",
   agentmailKey: process.env.AGENTMAIL_API_KEY ?? "",

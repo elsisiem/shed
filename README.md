@@ -92,7 +92,6 @@ Copy `.env.example` to `.env` (git-ignored). Every variable is optional. Without
 | `ELEVENLABS_API_KEY` | No | Spoken receipts from `POST /v1/speak` |
 | `ELEVENLABS_VOICE_ID` | No | Voice id. Defaults to a built-in voice |
 | `PORT` | No | Listen port. Default 8080 |
-| `PUBLIC_URL` | No | Read by `src/env.ts`, not used by any route yet |
 
 Storage is MongoDB when `MONGODB_URI` is set and reachable, and in-memory otherwise. The public demo currently runs in memory, so lineage resets on restart. For Atlas, allow the app host under Network Access, then confirm `GET /v1/status` reports `"mongo": true`.
 
